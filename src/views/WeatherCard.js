@@ -2,6 +2,7 @@ import React from 'react';
 import styled from '@emotion/styled';
 import dayjs from 'dayjs';
 import WeatherIcon from './../Components/WeatherIcon';
+import ThemeSwitch from './../Components/ThemeSwitch';
 
 //樣板 import { ReactComponent as DayCloudyIcon } from './images/day-cloudy.svg';
 import { ReactComponent as AirFlowIcon } from './../images/airFlow.svg';
@@ -11,18 +12,26 @@ import { ReactComponent as LoadingIcon } from './../images/loading.svg';
 import { ReactComponent as CogIcon } from './../images/cog.svg';
 
 const WeatherCardWrapper = styled.div`
+  box-sizing: border-box;
   position: relative;
   min-width: 360px;
+  height: 360px;
   box-shadow: ${({ theme }) => theme.boxShadow};
+  &:hover {
+    box-shadow: ${({ theme }) => theme.hoverBoxShadow};
+    transition: 0.2s;
+  }
+  transition: 0.2s;
   background-color: ${({ theme }) => theme.foregroundColor};
   box-sizing: border-box;
-  padding: 30px 15px;
+  padding: 30px 30px;
+  border-radius: 25px;
 `;
 
 // 透過 props 取得傳進來的資料
 // props 會是 {theme: "dark", children: "台北市"}
 const Location = styled.div`
-  font-size: 28px;
+  font-size: 35px;
   ${'' /* ${props => console.log(props)} */}
   ${'' /* color: ${props => props.theme === 'dark' ? '#dadada' : '#212121'}; */}
   color: ${({ theme }) => theme.titleColor};
@@ -44,12 +53,14 @@ const CurrentWeather = styled.div`
 
 const Temperature = styled.div`
   color: ${({ theme }) => theme.temperatureColor};
+  font-family: 'Lato', sans-serif;
   font-size: 96px;
   font-weight: 300;
   display: flex;
 `;
 
 const Celsius = styled.div`
+  font-family: 'Lato', sans-serif;
   font-weight: normal;
   font-size: 42px;
 `;
@@ -71,8 +82,9 @@ const AirFlow = styled.div`
 const Rain = styled.div`
   display: flex;
   align-items: center;
+  font-family: 'Lato', sans-serif;
   font-size: 16x;
-  font-weight: 300;
+  font-weight: 400;
   color: ${({ theme }) => theme.textColor};
   svg {
     width: 25px;
@@ -83,11 +95,27 @@ const Rain = styled.div`
 
 const Cog = styled(CogIcon)`
   position: absolute;
-  top: 30px;
-  right: 15px;
+  top: 42px;
+  left: 150px;
   width: 15px;
   height: 15px;
   cursor: pointer;
+`;
+
+const Cog1 = styled.div`
+  position: absolute;
+  top: 42px;
+  left: 190px;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  background-color: green;
+  border-radius: 10px;
+`;
+const ThemeSwitchIcon = styled.div`
+  position: absolute;
+  top: 40px;
+  right: 30px;
 `;
 
 //樣板
@@ -107,8 +135,8 @@ const Cog = styled(CogIcon)`
 
 const Refresh = styled.div`
   position: absolute;
-  right: 15px;
-  bottom: 15px;
+  right: 30px;
+  bottom: 20px;
   font-size: 12px;
   display: inline-flex;
   align-items: flex-end;
@@ -137,6 +165,7 @@ const WeatherCard = (props) => {
     moment,
     fetchData,
     handleCurrentPageChange,
+    handleThemeSwitch,
     cityName,
   } = props;
 
@@ -155,6 +184,14 @@ const WeatherCard = (props) => {
   return (
     <WeatherCardWrapper>
       <Cog onClick={() => handleCurrentPageChange('WeatherSetting')} />
+      <Cog1
+        onClick={() => {
+          handleCurrentPageChange('WeatherForecast');
+        }}
+      />
+      <ThemeSwitchIcon onClick={handleThemeSwitch}>
+        <ThemeSwitch />
+      </ThemeSwitchIcon>
       <Location>{cityName}</Location>
       <Description>
         {description} {comfortability}
@@ -165,9 +202,9 @@ const WeatherCard = (props) => {
         </Temperature>
         <WeatherIcon weatherCode={weatherCode} moment={moment} />
       </CurrentWeather>
-      <AirFlow>
+      {/* <AirFlow>
         <AirFlowIcon /> {windSpeed} m/h
-      </AirFlow>
+      </AirFlow> */}
       <Rain>
         <RainIcon /> {rainPossibility}%
       </Rain>

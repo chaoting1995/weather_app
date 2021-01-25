@@ -89,6 +89,42 @@ const fetchWeatherForecast = ({ authorizationKey, cityName }) => {
     });
 };
 
+const fetchWeatherForecastWeekday = ({ authorizationKey, cityName }) => {
+  //拉取資料前，設定載入指示器的狀態為true
+  // setWeatherElement((prevState) => ({
+  //   ...prevState,
+  //   isLoading: true,
+  // }));
+
+  const url = `https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-091?Authorization=${authorizationKey}&locationName=${cityName}`;
+
+  return fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log('取得「臺灣各鄉鎮市區未來1週天氣預報」data', data);
+      //  STEP 1：定義 `locationData` 把回傳的資料中會用到的部分取出來
+      const locationData = data.records.locations[0].location[0];
+
+      // STEP 2：取出 天氣現象'Wx', 降雨機率'PoP',舒適度 'CI'
+      const weatherElements = locationData.weatherElement.reduce(
+        (neededElements, item) => {
+          if (['Wx', 'PoP12h', 'MinT', 'MaxT'].includes(item.elementName)) {
+            neededElements[item.elementName] = item.time[0].parameter;
+          }
+          return neededElements;
+        },
+        {}
+      );
+
+      return {
+        description: weatherElements.Wx.parameterName,
+        weatherCode: weatherElements.Wx.parameterValue,
+        rainPossibility: weatherElements.PoP.parameterName,
+        comfortability: weatherElements.CI.parameterName,
+      };
+    });
+};
+
 // 為何這個沒用？
 // async function handleClick() {
 //   const request = new Request(url, {
@@ -128,6 +164,7 @@ const useWeatherAPI = ({ authorizationKey, cityName, locationName }) => {
     const [currentWeather, weatherForecast] = await Promise.all([
       fetchCurrentWeather({ authorizationKey, locationName }),
       fetchWeatherForecast({ authorizationKey, cityName }),
+      fetchWeatherForecastWeekday({ authorizationKey, a }),
     ]);
 
     // console.log('一掛載就讀取「局屬氣象站-現在天氣觀測報告」&「一般天氣預報-今明 36 小時天氣預報」',data);

@@ -5,28 +5,33 @@ import useWeatherAPI from './hooks/useWeatherAPI';
 // import { ThemeProvider } from 'emotion-theming';書裡引入方法不能用了
 import { ThemeProvider } from '@emotion/react';
 import WeatherCard from './views/WeatherCard';
+import WeatherForecast from './views/WeatherForecast';
 import WeatherSetting from './views/WeatherSetting';
 import styled from '@emotion/styled';
 
 //定義主題配色
 const theme = {
   light: {
-    backgroundColor: '#ededed',
+    backgroundColor: '#C8DAE6;',
     foregroundColor: '#f9f9f9',
-    boxShadow: '0 1px 3px 0 #999999',
+    boxShadow: '0px 0px 25px 1px rgba(50, 50, 50, 0.2);',
+    hoverBoxShadow: '0px 8px 40px 1px rgba(50, 50, 50, 0.4);',
     titleColor: '#212121',
     temperatureColor: '#757575',
     textColor: '#828282',
+    switchButton: '',
   },
 
   dark: {
-    backgroundColor: '#1F2022',
-    foregroundColor: '#121416',
-    boxShadow:
-      '0 1px 4px 0 rgba(12, 12, 13, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.15)',
+    backgroundColor: '#343d4b',
+    foregroundColor: '#222831',
+    // foregroundColor: '#121416',
+    boxShadow: '0px 0px 25px 1px rgba(20, 20, 20, 0.6);',
+    hoverBoxShadow: '0px 8px 40px 1px rgba(20, 20, 20, 1);',
     titleColor: '#f9f9fa',
     temperatureColor: '#dddddd',
     textColor: '#cccccc',
+    switchButton: '0 0 0 24px',
   },
 };
 
@@ -50,12 +55,21 @@ const App = () => {
   const [currentCity, setCurrentCity] = useState(storageCity);
   // const [ currentCity , setCurrentCity ] = useState(cityName);
 
+  // 切換頁面
   const handleCurrentPageChange = (currentPage) => {
     setCurrentPage(currentPage);
   };
 
+  // 切換地區
   const handleCurrentCityChange = (currentCity) => {
     setCurrentCity(currentCity);
+  };
+
+  // 切換主題色
+  const handleThemeSwitch = () => {
+    currentTheme === 'dark'
+      ? setCurrentTheme('light')
+      : setCurrentTheme('dark');
   };
 
   const currentLocation = useMemo(() => findLocation(currentCity), [
@@ -93,6 +107,17 @@ const App = () => {
             fetchData={fetchData}
             handleCurrentPageChange={handleCurrentPageChange}
             cityName={cityName}
+            handleThemeSwitch={handleThemeSwitch}
+          />
+        )}
+        {currentPage === 'WeatherForecast' && (
+          <WeatherForecast
+            weatherElement={weatherElement}
+            moment={moment}
+            fetchData={fetchData}
+            handleCurrentPageChange={handleCurrentPageChange}
+            cityName={cityName}
+            handleThemeSwitch={handleThemeSwitch}
           />
         )}
         {currentPage === 'WeatherSetting' && (

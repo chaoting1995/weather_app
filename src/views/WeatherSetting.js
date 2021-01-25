@@ -3,12 +3,20 @@ import styled from '@emotion/styled';
 import { availableLocations } from './../utils/helpers';
 
 const WeatherSettingWrapper = styled.div`
+  box-sizing: border-box;
   position: relative;
   min-width: 360px;
+  height: 360px;
   box-shadow: ${({ theme }) => theme.boxShadow};
+  &:hover {
+    box-shadow: ${({ theme }) => theme.hoverBoxShadow};
+    transition: 0.2s;
+  }
+  transition: 0.2s;
   background-color: ${({ theme }) => theme.foregroundColor};
   box-sizing: border-box;
-  padding: 20px;
+  padding: 30px 30px;
+  border-radius: 25px;
 `;
 
 const Title = styled.div`
@@ -29,6 +37,7 @@ const StyledSelect = styled.select`
   box-sizing: border-box;
   background: transparent;
   border: 1px solid ${({ theme }) => theme.textColor};
+  border-radius: 2px;
   outline: none;
   width: 100%;
   max-width: 100%;
