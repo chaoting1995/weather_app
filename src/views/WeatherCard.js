@@ -6,7 +6,7 @@ import LocationMark from './../Components/LocationMark';
 import Calendar from './../Components/Calendar';
 import ThemeSwitch from './../Components/ThemeSwitch';
 
-import { ReactComponent as RainIcon } from './../images/rain.svg';
+import { ReactComponent as UmbrellaIcon } from './../images/umbrella.svg';
 import { ReactComponent as RefreshIcon } from './../images/refresh.svg';
 import { ReactComponent as LoadingIcon } from './../images/loading.svg';
 
@@ -47,7 +47,7 @@ const CurrentWeather = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   svg {
     animation: moving infinite 1.5s linear;
     animation-duration: 1.5s;
@@ -81,17 +81,18 @@ const Celsius = styled.div`
   font-size: 42px;
 `;
 
-const Rain = styled.div`
+const Umbrella = styled.div`
   display: flex;
   align-items: center;
   font-family: 'Lato', sans-serif;
-  font-size: 16x;
-  font-weight: 400;
+  font-size: 25px;
+  font-weight: 300;
   color: ${({ theme }) => theme.textColor};
   svg {
     width: 25px;
     height: auto;
-    margin-right: 30px;
+    margin-right: 20px;
+    margin-left: 10px;
   }
 `;
 
@@ -134,7 +135,6 @@ const WeatherCard = (props) => {
 
   const {
     observationTime,
-    locationName,
     temperature,
     description,
     weatherCode,
@@ -167,12 +167,10 @@ const WeatherCard = (props) => {
         </Temperature>
         <WeatherIcon weatherCode={weatherCode} moment={moment} />
       </CurrentWeather>
-      {/* <AirFlow>
-        <AirFlowIcon /> {windSpeed} m/h
-      </AirFlow> */}
-      <Rain>
-        <RainIcon /> {rainPossibility}%
-      </Rain>
+      <Umbrella>
+        <UmbrellaIcon />
+        {rainPossibility}%
+      </Umbrella>
       <Refresh onClick={fetchData} isLoading={isLoading}>
         最後觀測時間：
         {new Intl.DateTimeFormat('zh-TW', {
