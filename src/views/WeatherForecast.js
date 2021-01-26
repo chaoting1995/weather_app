@@ -2,13 +2,11 @@ import React from 'react';
 import styled from '@emotion/styled';
 import dayjs from 'dayjs';
 import WeatherIcon from './../Components/WeatherIcon';
+import LocationMark from './../Components/LocationMark';
+import Calendar from './../Components/Calendar';
 import ThemeSwitch from './../Components/ThemeSwitch';
 
-//樣板 import { ReactComponent as DayCloudyIcon } from './images/day-cloudy.svg';
-import { ReactComponent as AirFlowIcon } from './../images/airFlow.svg';
-import { ReactComponent as RainIcon } from './../images/rain.svg';
-import { ReactComponent as LoadingIcon } from './../images/loading.svg';
-import { ReactComponent as CogIcon } from './../images/cog.svg';
+// import { ReactComponent as RainIcon } from './../images/rain.svg';
 
 const WeatherForecastWrapper = styled.div`
   box-sizing: border-box;
@@ -26,30 +24,6 @@ const WeatherForecastWrapper = styled.div`
   padding: 30px 30px;
   border-radius: 25px;
 `;
-const ThemeSwitchIcon = styled.div`
-  position: absolute;
-  top: 40px;
-  right: 30px;
-`;
-const Cog = styled(CogIcon)`
-  position: absolute;
-  top: 42px;
-  left: 150px;
-  width: 15px;
-  height: 15px;
-  cursor: pointer;
-`;
-
-const Cog1 = styled.div`
-  position: absolute;
-  top: 42px;
-  left: 190px;
-  width: 15px;
-  height: 15px;
-  cursor: pointer;
-  background-color: green;
-  border-radius: 10px;
-`;
 
 // 透過 props 取得傳進來的資料
 // props 會是 {theme: "dark", children: "台北市"}
@@ -58,7 +32,7 @@ const Location = styled.div`
   ${'' /* ${props => console.log(props)} */}
   ${'' /* color: ${props => props.theme === 'dark' ? '#dadada' : '#212121'}; */}
   color: ${({ theme }) => theme.titleColor};
-  margin-bottom: 50px;
+  margin-bottom: 40px;
 `;
 
 const ForecastWeather = styled.div`
@@ -77,12 +51,27 @@ const Weekday = styled.div`
 `;
 
 const WeatherIconWrap = styled.div`
+  margin-top: 10px;
   svg {
-    max-height: 60px;
+    height: 60px;
     margin: 0px -30px;
+    animation: moving infinite 1.5s linear;
+    animation-duration: 1.5s;
   }
+
+  @keyframes moving {
+    0% {
+      transform: translateY(10px);
+    }
+    50% {
+      transform: translateY(0px);
+    }
+    100% {
+      transform: translateY(10px);
+    }
 `;
 const Rain = styled.div`
+  margin-top: 10px;
   display: flex;
   align-items: center;
   font-family: 'Lato', sans-serif;
@@ -116,70 +105,68 @@ const WeekdayWeatherWrap = styled.div`
   display: flex;
 `;
 
+const WeekdayWeather = ({ item, moment }) => (
+  <ForecastWeather>
+    <Weekday>
+      {new Intl.DateTimeFormat('zh-TW', {
+        weekday: 'short',
+      }).format(dayjs(item.forecastDate))}
+    </Weekday>
+    <WeatherIconWrap>
+      <WeatherIcon weatherCode={item.weatherCode} moment={moment} />
+    </WeatherIconWrap>
+    <Rain>
+      {/* <RainIcon /> */}
+      {item.rainPossibility !== ' ' ? item.rainPossibility : 0}%
+    </Rain>
+    <TemperatureWrap>
+      <Temperature>
+        {Math.round(item.maxTemperature)} <Celsius>°</Celsius>
+      </Temperature>
+      <div> - </div>
+      <Temperature>
+        {Math.round(item.minTemperature)} <Celsius>°</Celsius>
+      </Temperature>
+    </TemperatureWrap>
+  </ForecastWeather>
+);
+
 const WeatherForecast = (props) => {
   const {
-    weatherElement,
     moment,
-    fetchData,
     handleCurrentPageChange,
+    handleSettingPageChange,
     handleThemeSwitch,
     cityName,
+    forecastWeekday,
   } = props;
 
-  const {
-    observationTime,
-    locationName,
-    temperature,
-    windSpeed,
-    description,
-    weatherCode,
-    rainPossibility,
-    comfortability,
-    isLoading,
-  } = weatherElement;
-
-  const WeekdayWeather = () => (
-    <ForecastWeather>
-      <Weekday>
-        {new Intl.DateTimeFormat('zh-TW', {
-          weekday: 'short',
-        }).format(dayjs(observationTime))}
-      </Weekday>
-      <WeatherIconWrap>
-        <WeatherIcon weatherCode={weatherCode} moment={moment} />
-      </WeatherIconWrap>
-      <Rain>
-        {/* <RainIcon /> */}
-        {rainPossibility}%
-      </Rain>
-      <TemperatureWrap>
-        <Temperature>
-          {Math.round(temperature)} <Celsius>°</Celsius>
-        </Temperature>
-        <div> - </div>
-        <Temperature>
-          {Math.round(temperature)} <Celsius>°</Celsius>
-        </Temperature>
-      </TemperatureWrap>
-    </ForecastWeather>
-  );
+  //   forecastDate: forecastDateArray[i],
+  //   weatherCode: weatherElements.Wx[i],
+  //   rainPossibility: weatherElements.PoP12h[i],
+  //   maxTemperature: weatherElements.MinT[i],
+  //   minTemperature: weatherElements.MaxT[i],
 
   return (
     <WeatherForecastWrapper>
-      <Cog onClick={() => handleCurrentPageChange('WeatherSetting')} />
-      <Cog1
-        onClick={() => {
+      <LocationMark
+        handleSettingPageChange={() =>
+          handleSettingPageChange('WeatherSetting')
+        }
+      />
+      <Calendar
+        handleCurrentPageChange={() => {
           handleCurrentPageChange('WeatherCard');
         }}
       />
-      <ThemeSwitchIcon onClick={handleThemeSwitch}>
-        <ThemeSwitch />
-      </ThemeSwitchIcon>
+
+      <ThemeSwitch handleThemeSwitch={handleThemeSwitch} />
+
       <Location>{cityName}</Location>
       <WeekdayWeatherWrap>
-        <WeekdayWeather />
-        <WeekdayWeather />
-        <WeekdayWeather />
+        {[...forecastWeekday].slice(0, 3).map((item, index) => (
+          <WeekdayWeather item={item} moment={moment} key={index} />
+        ))}
       </WeekdayWeatherWrap>
     </WeatherForecastWrapper>
   );

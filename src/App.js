@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { getMoment, findLocation } from './utils/helpers';
+import { fetchWeekday } from './utils/fetchWeekday';
 import useWeatherAPI from './hooks/useWeatherAPI';
 
 // import { ThemeProvider } from 'emotion-theming';書裡引入方法不能用了
@@ -31,7 +32,7 @@ const theme = {
     titleColor: '#f9f9fa',
     temperatureColor: '#dddddd',
     textColor: '#cccccc',
-    switchButton: '0 0 0 24px',
+    switchButton: '0 0 0 17px',
   },
 };
 
@@ -41,6 +42,44 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  ${'' /* position: relative; */}
+`;
+
+const BackCard = styled.div`
+  box-sizing: border-box;
+  position: relative;
+  min-width: 360px;
+  height: 360px;
+  background-color: #858585;
+  border-radius: 28px;
+  position: relative;
+  z-index: 0;
+  box-shadow: ${({ theme }) => theme.boxShadow};
+  transition: 0.2s;
+
+  &:hover {
+    box-shadow: ${({ theme }) => theme.hoverBoxShadow};
+    transition: 0.2s;
+  }
+  overflow: hidden;
+`;
+
+const WeatherSettingWrap = styled.div`
+  transform: ${({ settingPage }) =>
+    settingPage !== 'WeatherSetting' ? 'translate(360px,0)' : 'translate(0,0)'};
+  position: absolute;
+  z-index: 2;
+  transition: 0.7s;
+`;
+
+const WeatherCardsWrap = styled.div`
+  transform: ${({ settingPage }) =>
+    settingPage !== 'WeatherSetting'
+      ? 'translate(0,0)'
+      : 'translate(360px,360px)'};
+  position: absolute;
+  z-index: 1;
+  transition: 0.7s;
 `;
 
 const AUTHORIZATION_KEY = 'CWB-6F49758A-41B0-438C-B457-08D2C69B013A';
@@ -50,14 +89,20 @@ const AUTHORIZATION_KEY = 'CWB-6F49758A-41B0-438C-B457-08D2C69B013A';
 const App = () => {
   // const [currentTheme, setCurrentTheme] = useState('light');
   const [currentTheme, setCurrentTheme] = useState('light');
-  const [currentPage, setCurrentPage] = useState('WeatherCard');
+  const [currentPage, setCurrentPage] = useState('WeatherForecast');
+  const [settingPage, setSettingPage] = useState('WeatherCards');
   const storageCity = localStorage.getItem('cityName') || '臺北市';
   const [currentCity, setCurrentCity] = useState(storageCity);
+  const [forecastWeekday, setForecastWeekday] = useState([]);
   // const [ currentCity , setCurrentCity ] = useState(cityName);
 
-  // 切換頁面
+  // 切換頁面(即時天氣或預測天氣)
   const handleCurrentPageChange = (currentPage) => {
     setCurrentPage(currentPage);
+  };
+  // 切換頁面(即時天氣或預測天氣)
+  const handleSettingPageChange = (currentSetting) => {
+    setSettingPage(currentSetting);
   };
 
   // 切換地區
@@ -85,6 +130,18 @@ const App = () => {
     authorizationKey: AUTHORIZATION_KEY,
   });
 
+  useEffect(() => {
+    const funSetter = async () => {
+      const forecastWeekday = await fetchWeekday({
+        authorizationKey: AUTHORIZATION_KEY,
+        cityName,
+      });
+      setForecastWeekday(forecastWeekday);
+      console.log('取一週預測資料', forecastWeekday);
+    };
+    funSetter();
+  }, []);
+
   //判斷日夜( getMoment，傳入城市，回傳day or night)
   // 錯誤示範：const moment = useMemo(()=>{ getMoment(LOCATION_NAME_FORECAST); },[]) //抓了半天的臭蟲
   const moment = useMemo(() => getMoment(sunriseCityName), [sunriseCityName]);
@@ -100,33 +157,44 @@ const App = () => {
     // <ThemeProvider theme={theme.currentTheme}>//不能寫成這樣會爛掉
     <ThemeProvider theme={theme[currentTheme]}>
       <Container>
-        {currentPage === 'WeatherCard' && (
-          <WeatherCard
-            weatherElement={weatherElement}
-            moment={moment}
-            fetchData={fetchData}
-            handleCurrentPageChange={handleCurrentPageChange}
-            cityName={cityName}
-            handleThemeSwitch={handleThemeSwitch}
-          />
-        )}
-        {currentPage === 'WeatherForecast' && (
-          <WeatherForecast
-            weatherElement={weatherElement}
-            moment={moment}
-            fetchData={fetchData}
-            handleCurrentPageChange={handleCurrentPageChange}
-            cityName={cityName}
-            handleThemeSwitch={handleThemeSwitch}
-          />
-        )}
-        {currentPage === 'WeatherSetting' && (
-          <WeatherSetting
-            cityName={cityName}
-            handleCurrentCityChange={handleCurrentCityChange}
-            handleCurrentPageChange={handleCurrentPageChange}
-          />
-        )}
+        <BackCard>
+          <WeatherCardsWrap settingPage={settingPage}>
+            {currentPage === 'WeatherCard' && (
+              <WeatherCard
+                weatherElement={weatherElement}
+                moment={moment}
+                fetchData={fetchData}
+                handleCurrentPageChange={handleCurrentPageChange}
+                handleSettingPageChange={handleSettingPageChange}
+                cityName={cityName}
+                handleThemeSwitch={handleThemeSwitch}
+              />
+            )}
+            {currentPage === 'WeatherForecast' && (
+              <WeatherForecast
+                weatherElement={weatherElement}
+                moment={moment}
+                fetchData={fetchData}
+                handleCurrentPageChange={handleCurrentPageChange}
+                handleSettingPageChange={handleSettingPageChange}
+                cityName={cityName}
+                handleThemeSwitch={handleThemeSwitch}
+                forecastWeekday={forecastWeekday}
+              />
+            )}
+          </WeatherCardsWrap>
+          {/* {currentPage[0] === 'WeatherSetting' && ( */}
+          <WeatherSettingWrap settingPage={settingPage}>
+            <WeatherSetting
+              cityName={cityName}
+              handleCurrentCityChange={handleCurrentCityChange}
+              handleCurrentPageChange={handleCurrentPageChange}
+              handleSettingPageChange={handleSettingPageChange}
+              handleThemeSwitch={handleThemeSwitch}
+            />
+          </WeatherSettingWrap>
+          {/* )} */}
+        </BackCard>
       </Container>
     </ThemeProvider>
   );

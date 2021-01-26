@@ -1,23 +1,26 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from '@emotion/styled';
 
 const Switch = styled.div`
+position: absolute;
+  top: 39px;
+  right: 30px;
   box-sizing: border-box;
-  position: relative;
-  width: 52px;
-  height: 28px;
+  width: 45px;
+  height: 26px;
   background-color: #ccc;
+  &:hover{
+    background-color: #858585;
+    transition: 0.3s;
+  }
   ${'' /* background-color: ${({ theme }) => theme.backgroundColor}; */}
   border-radius: 50px;
   padding: 0px 3px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  transition: 0.4s;
+  transition: 0.3s;
   div {
-    ${'' /* position: absolute; */}
-    ${'' /* right: ${({ theme }) => theme.switchButton}; */}
-    ${'' /* bottom: 4px; */}
     height: 22px;
     width: 22px;
     border-radius: 50%;
@@ -29,11 +32,9 @@ const Switch = styled.div`
   $
   }
 `;
-function ThemeSwitch(props) {
-  const {} = props;
-  const [isChecked, setIsChecked] = useState(false);
+function ThemeSwitch({ handleThemeSwitch }) {
   return (
-    <Switch>
+    <Switch onClick={handleThemeSwitch}>
       <div></div>
     </Switch>
   );

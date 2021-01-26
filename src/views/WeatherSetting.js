@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { availableLocations } from './../utils/helpers';
-
+import LocationMark from './../Components/LocationMark';
+import ThemeSwitch from './../Components/ThemeSwitch';
 const WeatherSettingWrapper = styled.div`
   box-sizing: border-box;
-  position: relative;
+  ${'' /* position: relative; */}
   min-width: 360px;
   height: 360px;
   box-shadow: ${({ theme }) => theme.boxShadow};
@@ -20,16 +21,9 @@ const WeatherSettingWrapper = styled.div`
 `;
 
 const Title = styled.div`
-  font-size: 28px;
+  font-size: 35px;
   color: ${({ theme }) => theme.titleColor};
-  margin-bottom: 30px;
-`;
-
-const StyledLabel = styled.label`
-  display: block;
-  font-size: 16px;
-  color: ${({ theme }) => theme.textColor};
-  margin-bottom: 15px;
+  margin-bottom: 70px;
 `;
 
 const StyledSelect = styled.select`
@@ -100,7 +94,13 @@ const Save = styled.button`
 `;
 
 const WeatherSetting = (props) => {
-  const { handleCurrentPageChange, handleCurrentCityChange, cityName } = props;
+  const {
+    handleCurrentPageChange,
+    handleCurrentCityChange,
+    handleSettingPageChange,
+    cityName,
+    handleThemeSwitch,
+  } = props;
   const [locationName, setLocationName] = useState(cityName);
 
   const handleChange = (e) => {
@@ -110,15 +110,18 @@ const WeatherSetting = (props) => {
 
   const handleSave = () => {
     handleCurrentCityChange(locationName);
-    handleCurrentPageChange('WeatherCard');
+    handleSettingPageChange('WeatherCards');
     localStorage.setItem('cityName', locationName);
   };
 
   return (
     <WeatherSettingWrapper>
-      <Title>設定</Title>
-      <StyledLabel htmlFor="location">地區</StyledLabel>
+      <LocationMark
+        handleSettingPageChange={() => handleSettingPageChange('WeatherCards')}
+      />
 
+      <ThemeSwitch handleThemeSwitch={handleThemeSwitch} />
+      <Title>選地區</Title>
       <StyledSelect
         id="location"
         name="location"
@@ -133,11 +136,7 @@ const WeatherSetting = (props) => {
       </StyledSelect>
 
       <ButtonGroup>
-        <Back
-          onClick={() => {
-            handleCurrentPageChange('WeatherCard');
-          }}
-        >
+        <Back onClick={() => handleSettingPageChange('WeatherCards')}>
           返回
         </Back>
         <Save onClick={handleSave}>儲存</Save>
