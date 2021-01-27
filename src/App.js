@@ -21,6 +21,7 @@ const theme = {
     temperatureColor: '#757575',
     textColor: '#828282',
     switchButton: '',
+    buttonHoverBackgroundColor: '#cccccc',
   },
 
   dark: {
@@ -33,6 +34,7 @@ const theme = {
     temperatureColor: '#dddddd',
     textColor: '#cccccc',
     switchButton: '0 0 0 17px',
+    buttonHoverBackgroundColor: '#858585',
   },
 };
 

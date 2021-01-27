@@ -43,6 +43,7 @@ const StyledSelect = styled.select`
   -moz-appearance: none;
   box-shadow: none;
   outline: 0;
+  cursor: pointer;
 `;
 
 const ButtonGroup = styled.div`
@@ -84,6 +85,9 @@ const Back = styled.button`
     color: ${({ theme }) => theme.textColor};
     border-color: ${({ theme }) => theme.textColor};
   }
+  &:hover {
+    background-color: ${({ theme }) => theme.buttonHoverBackgroundColor};
+  }
 `;
 
 const Save = styled.button`
@@ -91,11 +95,12 @@ const Save = styled.button`
     color: white;
     background-color: #40a9f3;
   }
+  &:hover {
+      background-color: #2387cf;
 `;
 
 const WeatherSetting = (props) => {
   const {
-    handleCurrentPageChange,
     handleCurrentCityChange,
     handleSettingPageChange,
     cityName,
