@@ -96,7 +96,8 @@ const Save = styled.button`
     background-color: #40a9f3;
   }
   &:hover {
-      background-color: #2387cf;
+    background-color: #2387cf;
+  }
 `;
 
 const WeatherSetting = (props) => {
