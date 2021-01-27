@@ -69,6 +69,7 @@ const WeatherIconWrap = styled.div`
     100% {
       transform: translateY(10px);
     }
+  }
 `;
 const Rain = styled.div`
   margin-top: 10px;
